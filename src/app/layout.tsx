@@ -1,5 +1,6 @@
 import FathomAnalytics from '@/components/scripts/FathomAnalytics';
 import MetaPixel from '@/components/scripts/MetaPixel';
+import { Toaster } from '@/components/ui/sonner';
 import { Analytics as VercelAnalytics } from '@vercel/analytics/next';
 import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
@@ -43,6 +44,7 @@ export default async function RootLayout({
         <NextIntlClientProvider locale={locale} messages={messages}>
           {children}
         </NextIntlClientProvider>
+        <Toaster />
         <MetaPixel />
         {/* TODO: enable later */}
         {/* <HyrosScript /> */}

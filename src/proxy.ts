@@ -1,9 +1,12 @@
+import { createServerClient } from '@supabase/ssr';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { APP_LOCALES, AppLocale } from './i18n/request';
 
 const LOCALE_COOKIE_NAME = 'NEXT_LOCALE';
 const LOCALE_COOKIE_MAX_AGE = 34560000;
+
+const PUBLIC_PATHS = ['/', '/verify'];
 
 function isValidLocale(v: string | null | undefined): v is AppLocale {
   return APP_LOCALES.includes(v as AppLocale);
@@ -15,8 +18,42 @@ function detectLocaleFromHeader(acceptLanguage: string | null): AppLocale {
   return isValidLocale(primary) ? primary : 'cs';
 }
 
-export function proxy(_request: NextRequest) {
+export async function proxy(_request: NextRequest) {
   const currentUrl = _request.nextUrl;
+  const pathname = currentUrl.pathname;
+
+  const isPublic = PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+
+  if (!isPublic) {
+    let supabaseResponse = NextResponse.next({ request: _request });
+
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll: () => _request.cookies.getAll(),
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value }) => _request.cookies.set(name, value));
+            supabaseResponse = NextResponse.next({ request: _request });
+            cookiesToSet.forEach(({ name, value, options }) =>
+              supabaseResponse.cookies.set(name, value, options),
+            );
+          },
+        },
+      },
+    );
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.redirect(new URL('/verify', _request.url));
+    }
+
+    return supabaseResponse;
+  }
 
   const existingLocale = _request.cookies.get(LOCALE_COOKIE_NAME)?.value;
   const resolvedLocale: AppLocale = isValidLocale(existingLocale)

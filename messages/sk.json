@@ -8,5 +8,13 @@
   "email_loading": "Načítavam...",
   "email_error_empty": "Zadaj prosím svoj e-mail",
   "email_error_invalid": "Zadaj prosím platnú e-mailovú adresu",
-  "email_privacy": "Chránime tvoje súkromie a záväzujeme sa k ochrane tvojich osobných údajov. Nikdy neposielame spam - iba relevantné informácie."
+  "email_privacy": "Chránime tvoje súkromie a záväzujeme sa k ochrane tvojich osobných údajov. Nikdy neposielame spam - iba relevantné informácie.",
+  "verify_subtitle_email": "Prihlás sa pomocou svojho e-mailu.",
+  "verify_subtitle_otp": "Zadaj overovací kód zaslaný na tvoj e-mail.",
+  "verify_otp_label": "Overovací kód",
+  "verify_otp_submit": "Overiť",
+  "verify_no_subscription": "K tomuto e-mailu neexistuje aktívne predplatné.",
+  "verify_otp_error": "Neplatný alebo vypršaný kód. Skús to znova.",
+  "portal_welcome": "Vitaj v portáli!",
+  "portal_user_id_label": "ID používateľa"
 }
