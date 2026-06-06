@@ -1,0 +1,12 @@
+{
+  "layout_title": "Super Tlapka - Výcvikový plán pro tvého psa",
+  "layout_description": "Získej personalizovaný výcvikový plán na míru pro tvého psa.",
+  "welcome_subtitle": "Přihlaš se a pokračuj k výcvikovému plánu pro tvého psa.",
+  "email_label": "E-mail",
+  "login_submit": "Pokračovat",
+  "email_placeholder": "Tvůj email",
+  "email_loading": "Načítávám...",
+  "email_error_empty": "Zadej prosím svůj e-mail",
+  "email_error_invalid": "Zadej prosím platnou e-mailovou adresu",
+  "email_privacy": "Chráníme tvoje soukromí a zavazujeme se k ochraně tvých osobních údajů. Nikdy neposíláme spam - pouze relevantní informace."
+}
