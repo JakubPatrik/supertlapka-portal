@@ -3,7 +3,7 @@ import Image from 'next/image';
 export function NavHeader() {
   return (
     <header className="relative shrink-0 border-b border-gray-200">
-      <div className="flex min-h-14 items-center px-4 py-2">
+      <div className="flex min-h-14 items-center px-4 pt-1.5 pb-2.5">
         <div className="flex flex-1 items-center justify-center">
           <Image
             src="/images/logo-no-arrow.svg"
