@@ -50,5 +50,13 @@
   "cancel_step3_item_stress": "Odbourání stresového chování",
   "cancel_step3_item_community": "Přístup do aktivní psí komunity",
   "cancel_step3_item_meetings": "Týdenní skupinové online setkání s trenérkou na vámi vybrané téma",
-  "cancel_step3_item_contests": "Pravidelné soutěže o psí potřeby"
+  "cancel_step3_item_contests": "Pravidelné soutěže o psí potřeby",
+  "cancel_step3_final_cancel": "Definitivně zrušit",
+  "cancel_loading_pause_text": "Pozastavujeme tvé předplatné...",
+  "cancel_loading_cancel_text": "Rušíme tvé předplatné...",
+  "cancel_success_title": "Hotovo!",
+  "cancel_success_pause_text": "Tvé předplatné bylo úspěšně pozastaveno na 30 dní.",
+  "cancel_success_cancel_text": "Tvé předplatné bylo zrušeno. Přístup máš do konce aktuálního období.",
+  "cancel_error_title": "Něco se pokazilo",
+  "cancel_error_text": "Nepodařilo se zpracovat tvůj požadavek. Zkus to prosím znovu."
 }

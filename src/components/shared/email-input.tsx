@@ -91,10 +91,10 @@ export const EmailInput = forwardRef<EmailInputHandle, EmailInputProps>(function
           autoComplete="email"
         />
         {showEmailSuggestions && (
-          <div className="bg-background absolute top-14 right-0 left-0 z-50 rounded-sm shadow-sm">
+          <div className="bg-background absolute top-14 right-0 left-0 z-50 rounded-sm shadow-md">
             <ul className="max-h-52 w-full space-y-4 overflow-auto p-3">
               {emailSuggestions.map((e) => (
-                <li key={e} className="cursor-pointer" role="button" onClick={() => setEmail(e)}>
+                <li key={e} className="cursor-pointer text-sm" role="button" onClick={() => setEmail(e)}>
                   {e}
                 </li>
               ))}

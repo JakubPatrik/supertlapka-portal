@@ -6,6 +6,7 @@ import { Step0 } from './step-0';
 import { Step1 } from './step-1';
 import { Step2 } from './step-2';
 import { Step3 } from './step-3';
+import { StepLoading } from './step-loading';
 
 export function CancelContent() {
   const searchParams = useSearchParams();
@@ -19,6 +20,15 @@ export function CancelContent() {
   }, [stepParam, router]);
 
   if (stepParam === null) return null;
+
+  if (stepParam === 'loading') {
+    const action = searchParams.get('action') as 'pause' | 'cancel';
+    return (
+      <main className="flex flex-1 px-4">
+        <StepLoading action={action} />
+      </main>
+    );
+  }
 
   const step = Number(stepParam);
   const goToStep = (s: number) => router.push(`/portal/cancel?step=${s}`);

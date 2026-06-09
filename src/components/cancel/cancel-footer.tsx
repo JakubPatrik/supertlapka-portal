@@ -32,10 +32,10 @@ export function CancelFooter({ variant }: CancelFooterProps) {
             {(variant === "step2") && (
                 <div className="space-y-3">
                     <Button size="lg" className="w-full" asChild style={{ animation: 'cta-glow 2s ease-in-out infinite' }}>
-                        <div className="cursor-pointer">
+                        <Link href="/portal/cancel?step=loading&action=pause">
                             <PawPrint className="size-6 -rotate-45 fill-white" />
                             {t('cancel_step2_accept')}
-                        </div>
+                        </Link>
                     </Button>
 
                     <Button size="lg" variant="outline" className="w-full" asChild>
@@ -55,8 +55,10 @@ export function CancelFooter({ variant }: CancelFooterProps) {
                             {t('cancel_keep')}
                         </Link>
                     </Button>
-                    <Button size="lg" variant="outline" className="w-full">
-                        {t('cancel_step2_continue_cancel')}
+                    <Button size="lg" variant="outline" className="w-full" asChild>
+                        <Link href="/portal/cancel?step=loading&action=cancel">
+                            {t('cancel_step3_final_cancel')}
+                        </Link>
                     </Button>
                 </div>
             )}

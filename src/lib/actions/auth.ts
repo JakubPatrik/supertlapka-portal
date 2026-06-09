@@ -22,7 +22,7 @@ export async function sendOtp(email: string): Promise<void> {
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithOtp({
     email,
-    options: { shouldCreateUser: true },
+    options: { shouldCreateUser: false },
   });
   if (error) throw new Error(error.message);
 }
