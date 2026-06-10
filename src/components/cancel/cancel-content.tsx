@@ -34,7 +34,7 @@ export function CancelContent() {
   const goToStep = (s: number) => router.push(`/portal/cancel?step=${s}`);
 
   return (
-    <main className="flex-1 px-4">
+    <main className="flex-1 px-4 mx-auto max-w-md overflow-clip">
       {step === 0 && <Step0 goToStep={goToStep} />}
       {step === 1 && <Step1 goToStep={goToStep} />}
       {step === 2 && <Step2 />}

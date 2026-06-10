@@ -1,13 +1,19 @@
 import { BillingPortalCard } from '@/components/portal/billing-portal-card';
 import { CancelPortalCard } from '@/components/portal/cancel-portal-card';
 import { PortalCard } from '@/components/portal/portal-card';
+import { ResumePortalCard } from '@/components/portal/resume-portal-card';
 import { NavHeader } from '@/components/shared/nav-header';
+import { getCancelledSubscription, getPausedSubscription } from '@/lib/actions/subscription';
 import { Ban } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 
 export default async function PortalPage() {
-  const t = await getTranslations();
+  const [t, pausedSubscription, cancelledSubscription] = await Promise.all([
+    getTranslations(),
+    getPausedSubscription(),
+    getCancelledSubscription(),
+  ]);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -37,13 +43,18 @@ export default async function PortalPage() {
         <section className="space-y-3 px-4 py-6">
           <BillingPortalCard />
           <CancelPortalCard />
-          <PortalCard
-            icon={<Ban size={22} />}
-            color="gray"
-            title={t('portal_card_cancel_title')}
-            description={t('portal_card_cancel_desc')}
-            href="/portal/cancel"
-          />
+          {pausedSubscription ? (
+            <ResumePortalCard />
+          ) : (
+            <PortalCard
+              icon={<Ban size={22} />}
+              color="gray"
+              title={t('portal_card_cancel_title')}
+              description={t('portal_card_cancel_desc')}
+              href="/portal/cancel"
+              disabled={!!cancelledSubscription}
+            />
+          )}
         </section>
 
         <div className="pointer-events-none fixed -bottom-16 -right-8 z-[-1]">

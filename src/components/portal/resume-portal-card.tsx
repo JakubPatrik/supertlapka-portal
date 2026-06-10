@@ -1,25 +1,27 @@
 'use client';
 
-import { createBillingPortalSession } from '@/lib/actions/subscription';
-import { Receipt } from 'lucide-react';
+import { resumeSubscription } from '@/lib/actions/subscription';
+import { PlayCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { PortalCard } from './portal-card';
 
-export function BillingPortalCard() {
+export function ResumePortalCard() {
   const t = useTranslations();
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   async function handleClick() {
     if (loading) return;
     setLoading(true);
     try {
-      const url = await createBillingPortalSession();
-      window.open(url, '_blank');
+      await resumeSubscription();
+      toast.success(t('portal_card_resume_success'));
+      router.refresh();
     } catch (err: unknown) {
       toast.error((err as Error).message);
-    } finally {
       setLoading(false);
     }
   }
@@ -27,10 +29,10 @@ export function BillingPortalCard() {
   return (
     <button onClick={handleClick} className="cursor-pointer w-full text-left disabled:opacity-60" disabled={loading}>
       <PortalCard
-        icon={<Receipt size={22} />}
-        color="blue"
-        title={t('portal_card_billing_title')}
-        description={t('portal_card_billing_desc')}
+        icon={<PlayCircle size={22} />}
+        color="green"
+        title={t('portal_card_resume_title')}
+        description={t('portal_card_resume_desc')}
         loading={loading}
       />
     </button>

@@ -27,20 +27,41 @@ async function getCustomerId(): Promise<string> {
   return customers.data[0].id;
 }
 
-async function getActiveSubscription() {
-  const t = await getTranslations();
+async function getSubscriptions(productId?: string) {
   const customerId = await getCustomerId();
+  const subscriptions = await stripe.subscriptions.list({ customer: customerId, limit: 10 });
+  return subscriptions.data.filter(
+    (s) =>
+      s.status === 'active' &&
+      (!productId || s.items.data.some((item) => item.price.product === productId)),
+  );
+}
 
-  const subscriptions = await stripe.subscriptions.list({ customer: customerId, limit: 5 });
-  const active = subscriptions.data.find((s) => s.status === 'active');
-  if (!active) throw new Error(t('verify_no_subscription'));
+export async function getCancelledSubscription() {
+  try {
+    const subs = await getSubscriptions(process.env.STRIPE_PRODUCT_REGULAR);
+    return subs.find((s) => s.cancel_at_period_end && !s.pause_collection) ?? null;
+  } catch {
+    return null;
+  }
+}
 
-  return active;
+export async function getPausedSubscription() {
+  try {
+    const subs = await getSubscriptions(process.env.STRIPE_PRODUCT_REGULAR);
+    // Stripe keeps status 'active' even when collection is paused — check pause_collection
+    return subs.find((s) => s.pause_collection !== null) ?? null;
+  } catch {
+    return null;
+  }
 }
 
 export async function pauseSubscription(): Promise<void> {
-  const subscription = await getActiveSubscription();
-  await stripe.subscriptions.update(subscription.id, {
+  const t = await getTranslations();
+  const subs = await getSubscriptions(process.env.STRIPE_PRODUCT_REGULAR);
+  const active = subs.find((s) => !s.pause_collection);
+  if (!active) throw new Error(t('verify_no_subscription'));
+  await stripe.subscriptions.update(active.id, {
     pause_collection: {
       behavior: 'void',
       resumes_at: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60,
@@ -49,10 +70,21 @@ export async function pauseSubscription(): Promise<void> {
 }
 
 export async function cancelSubscription(): Promise<void> {
-  const subscription = await getActiveSubscription();
-  await stripe.subscriptions.update(subscription.id, {
+  const t = await getTranslations();
+  const subs = await getSubscriptions(process.env.STRIPE_PRODUCT_REGULAR);
+  const active = subs.find((s) => !s.pause_collection);
+  if (!active) throw new Error(t('verify_no_subscription'));
+  await stripe.subscriptions.update(active.id, {
     cancel_at_period_end: true,
   });
+}
+
+export async function resumeSubscription(): Promise<void> {
+  const t = await getTranslations();
+  const subs = await getSubscriptions(process.env.STRIPE_PRODUCT_REGULAR);
+  const paused = subs.find((s) => s.pause_collection !== null);
+  if (!paused) throw new Error(t('verify_no_subscription'));
+  await stripe.subscriptions.update(paused.id, { pause_collection: '' });
 }
 
 async function getReturnUrl(): Promise<string> {
@@ -73,15 +105,29 @@ export async function createBillingPortalSession(): Promise<string> {
 }
 
 export async function createCancelSubscriptionPortalSession(): Promise<string> {
-  const subscription = await getActiveSubscription();
-  const customerId = subscription.customer as string;
-  const session = await stripe.billingPortal.sessions.create({
-    customer: customerId,
-    return_url: await getReturnUrl(),
-    flow_data: {
-      type: 'subscription_cancel',
-      subscription_cancel: { subscription: subscription.id },
-    },
-  });
-  return session.url;
+  const t = await getTranslations();
+  const customerId = await getCustomerId();
+
+  const subscriptions = await stripe.subscriptions.list({ customer: customerId, limit: 10 });
+  const mentoring = subscriptions.data.find(
+    (s) =>
+      s.status === 'active' &&
+      !s.cancel_at_period_end &&
+      s.items.data.some((item) => item.price.product === process.env.STRIPE_PRODUCT_UPSELL),
+  );
+  if (!mentoring) throw new Error(t('verify_no_mentoring'));
+
+  try {
+    const session = await stripe.billingPortal.sessions.create({
+      customer: customerId,
+      return_url: await getReturnUrl(),
+      flow_data: {
+        type: 'subscription_cancel',
+        subscription_cancel: { subscription: mentoring.id },
+      },
+    });
+    return session.url;
+  } catch {
+    throw new Error(t('verify_no_mentoring'));
+  }
 }

@@ -20,11 +20,11 @@ export function Step2() {
           <p className="mx-auto max-w-xs mt-5 pb-12 text-2xl font-bold">
             {t('cancel_step2_offer_subtitle')}
           </p>
-          <div className="absolute top-16 -left-8 rotate-45 -z-1">
+          <div className="absolute top-22 -left-8 rotate-45 -z-1">
             <Image src="/icons/gift.png" alt="" width={80} height={40} aria-hidden />
           </div>
-          <div className="absolute top-10 -left-4 z-10">
-            <div className="h-44 w-4 bg-background border-r border-primary"></div>
+          <div className="absolute top-15 -left-6 z-10">
+            <div className="h-44 w-6 bg-background border-r border-primary"></div>
           </div>
           <div className="absolute -bottom-12 left-8">
             <Image src="/icons/curved_arrow.svg" alt="" width={80} height={40} aria-hidden />

@@ -1,6 +1,7 @@
 import FathomAnalytics from '@/components/scripts/FathomAnalytics';
 import MetaPixel from '@/components/scripts/MetaPixel';
 import { Toaster } from '@/components/ui/sonner';
+import NextTopLoader from 'nextjs-toploader';
 import { Analytics as VercelAnalytics } from '@vercel/analytics/next';
 import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
@@ -41,6 +42,7 @@ export default async function RootLayout({
   return (
     <html lang={locale} className={`${balooBhai2.variable} ${dynaPuff.variable}`}>
       <body className="font-baloo antialiased" suppressHydrationWarning>
+        <NextTopLoader showSpinner={false} color="var(--color-primary)" />
         <NextIntlClientProvider locale={locale} messages={messages}>
           {children}
         </NextIntlClientProvider>
