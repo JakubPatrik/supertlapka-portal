@@ -1,7 +1,7 @@
 'use server';
 
-import { createClient } from '@/lib/supabase/server';
 import { stripe } from '@/lib/stripe';
+import { createClient } from '@/lib/supabase/server';
 import { getTranslations } from 'next-intl/server';
 
 export async function sendOtp(email: string): Promise<void> {
@@ -20,10 +20,7 @@ export async function sendOtp(email: string): Promise<void> {
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithOtp({
-    email,
-    options: { shouldCreateUser: false },
-  });
+  const { error } = await supabase.auth.signInWithOtp({ email });
   if (error) throw new Error(error.message);
 }
 
@@ -32,5 +29,6 @@ export async function verifyOtp(email: string, token: string): Promise<void> {
   const supabase = await createClient();
 
   const { error } = await supabase.auth.verifyOtp({ email, token, type: 'email' });
+  console.error(error);
   if (error) throw new Error(t('verify_otp_error'));
 }

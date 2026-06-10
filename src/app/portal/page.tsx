@@ -1,6 +1,8 @@
+import { BillingPortalCard } from '@/components/portal/billing-portal-card';
+import { CancelPortalCard } from '@/components/portal/cancel-portal-card';
 import { PortalCard } from '@/components/portal/portal-card';
 import { NavHeader } from '@/components/shared/nav-header';
-import { Ban, Receipt, UserMinus } from 'lucide-react';
+import { Ban } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 
@@ -11,7 +13,7 @@ export default async function PortalPage() {
     <div className="flex min-h-screen flex-col">
       <NavHeader />
 
-      <main className="flex-1">
+      <main className="flex-1 mx-auto max-w-md relative">
         <section className="relative bg-muted rounded-lg px-6 pb-0 pt-8 mt-8 min-h-[220px]">
           <div className="max-w-[55%]">
             <h1 className="text-4xl font-bold leading-tight text-black">
@@ -33,18 +35,8 @@ export default async function PortalPage() {
         </section>
 
         <section className="space-y-3 px-4 py-6">
-          <PortalCard
-            icon={<Receipt size={22} />}
-            color="green"
-            title={t('portal_card_billing_title')}
-            description={t('portal_card_billing_desc')}
-          />
-          <PortalCard
-            icon={<UserMinus size={22} />}
-            color="yellow"
-            title={t('portal_card_mentoring_title')}
-            description={t('portal_card_mentoring_desc')}
-          />
+          <BillingPortalCard />
+          <CancelPortalCard />
           <PortalCard
             icon={<Ban size={22} />}
             color="gray"

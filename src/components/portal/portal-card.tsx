@@ -1,4 +1,4 @@
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 
 type CardColor = 'green' | 'yellow' | 'gray';
@@ -9,12 +9,14 @@ export function PortalCard({
     title,
     description,
     href,
+    loading,
 }: {
     icon: React.ReactNode;
     color: CardColor;
     title: string;
     description: string;
     href?: string;
+    loading?: boolean;
 }) {
     const colorMap: Record<CardColor, { badge: string; chevron: string, border: string }> = {
         green: { badge: 'bg-green-500', chevron: 'text-green-500', border: 'border-green-500' },
@@ -32,7 +34,10 @@ export function PortalCard({
                 <p className="font-semibold text-sm text-gray-900 leading-tight">{title}</p>
                 <p className="mt-0.5 text-xs text-gray-500 leading-snug">{description}</p>
             </div>
-            <ChevronRight className={`shrink-0 size-7 ${chevron}`} />
+            {loading
+                ? <Loader2 className={`shrink-0 size-5 ${chevron} animate-spin`} />
+                : <ChevronRight className={`shrink-0 size-7 ${chevron}`} />
+            }
         </div>
     );
 

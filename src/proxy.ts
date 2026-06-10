@@ -6,7 +6,7 @@ import { APP_LOCALES, AppLocale } from './i18n/request';
 const LOCALE_COOKIE_NAME = 'NEXT_LOCALE';
 const LOCALE_COOKIE_MAX_AGE = 34560000;
 
-const PUBLIC_PATHS = ['/', '/verify', '/portal'];
+const PUBLIC_PATHS = ['/', '/verify'];
 
 function isValidLocale(v: string | null | undefined): v is AppLocale {
   return APP_LOCALES.includes(v as AppLocale);

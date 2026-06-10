@@ -26,7 +26,7 @@ export function OtpForm({ email }: OtpFormProps) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (token.length < 6) return;
+    if (token.length < 8) return;
     setError(null);
     setIsPending(true);
     try {
@@ -58,7 +58,7 @@ export function OtpForm({ email }: OtpFormProps) {
         <div className="space-y-1.5">
           {/* <Label>{t('verify_otp_label')}</Label> */}
           <InputOTP
-            maxLength={6}
+            maxLength={8}
             value={token}
             onChange={(val) => {
               setToken(val);
@@ -75,6 +75,8 @@ export function OtpForm({ email }: OtpFormProps) {
               <InputOTPSlot index={3} className="flex-1" />
               <InputOTPSlot index={4} className="flex-1" />
               <InputOTPSlot index={5} className="flex-1" />
+              <InputOTPSlot index={6} className="flex-1" />
+              <InputOTPSlot index={7} className="flex-1" />
             </InputOTPGroup>
           </InputOTP>
           {error && (
@@ -95,7 +97,7 @@ export function OtpForm({ email }: OtpFormProps) {
         >
           <Button
             type="submit"
-            disabled={isPending || token.length < 6}
+            disabled={isPending || token.length < 8}
             className="h-12 w-full rounded-xl text-base font-semibold"
           >
             {isPending ? (
