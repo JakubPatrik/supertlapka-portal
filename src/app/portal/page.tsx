@@ -1,18 +1,18 @@
 import { BillingPortalCard } from '@/components/portal/billing-portal-card';
 import { CancelPortalCard } from '@/components/portal/cancel-portal-card';
 import { PortalCard } from '@/components/portal/portal-card';
+import { ResumeMentoringPortalCard } from '@/components/portal/resume-mentoring-portal-card';
 import { ResumePortalCard } from '@/components/portal/resume-portal-card';
 import { NavHeader } from '@/components/shared/nav-header';
-import { getCancelledSubscription, getPausedSubscription } from '@/lib/actions/subscription';
+import { getPortalSubscriptions, resumeCancelledSubscription, resumeSubscription } from '@/lib/actions/subscription';
 import { Ban } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 
 export default async function PortalPage() {
-  const [t, pausedSubscription, cancelledSubscription] = await Promise.all([
+  const [t, subscriptions] = await Promise.all([
     getTranslations(),
-    getPausedSubscription(),
-    getCancelledSubscription(),
+    getPortalSubscriptions(),
   ]);
 
   return (
@@ -42,9 +42,23 @@ export default async function PortalPage() {
 
         <section className="space-y-3 px-4 py-6">
           <BillingPortalCard />
-          <CancelPortalCard />
-          {pausedSubscription ? (
-            <ResumePortalCard />
+          {(subscriptions.upsell?.canReactivate || subscriptions.upsell?.canResume)
+            ? <ResumeMentoringPortalCard />
+            : <CancelPortalCard />}
+          {subscriptions.regular?.canResume ? (
+            <ResumePortalCard
+              action={resumeSubscription}
+              titleKey="portal_card_resume_title"
+              descKey="portal_card_resume_desc"
+              successKey="portal_card_resume_success"
+            />
+          ) : subscriptions.regular?.canReactivate ? (
+            <ResumePortalCard
+              action={resumeCancelledSubscription}
+              titleKey="portal_card_resume_cancelled_title"
+              descKey="portal_card_resume_cancelled_desc"
+              successKey="portal_card_resume_cancelled_success"
+            />
           ) : (
             <PortalCard
               icon={<Ban size={22} />}
@@ -52,7 +66,6 @@ export default async function PortalPage() {
               title={t('portal_card_cancel_title')}
               description={t('portal_card_cancel_desc')}
               href="/portal/cancel"
-              disabled={!!cancelledSubscription}
             />
           )}
         </section>

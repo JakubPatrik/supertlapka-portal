@@ -37,22 +37,37 @@ async function getSubscriptions(productId?: string) {
   );
 }
 
-export async function getCancelledSubscription() {
-  try {
-    const subs = await getSubscriptions(process.env.STRIPE_PRODUCT_REGULAR);
-    return subs.find((s) => s.cancel_at_period_end && !s.pause_collection) ?? null;
-  } catch {
-    return null;
-  }
+type SubState = {
+  canReactivate: boolean;
+  canResume: boolean;
+  canCancel: boolean;
+} | null;
+
+function resolveSubState(sub: Awaited<ReturnType<typeof stripe.subscriptions.list>>['data'][number] | undefined): SubState {
+  if (!sub) return null;
+  const isPaused = sub.pause_collection !== null;
+  const isScheduledToCancel = sub.cancel_at_period_end || !!sub.cancel_at;
+  return {
+    canReactivate: isScheduledToCancel && !isPaused,
+    canResume: isPaused,
+    canCancel: !isScheduledToCancel && !isPaused,
+  };
 }
 
-export async function getPausedSubscription() {
+export async function getPortalSubscriptions(): Promise<{ regular: SubState; upsell: SubState }> {
   try {
-    const subs = await getSubscriptions(process.env.STRIPE_PRODUCT_REGULAR);
-    // Stripe keeps status 'active' even when collection is paused — check pause_collection
-    return subs.find((s) => s.pause_collection !== null) ?? null;
+    const customerId = await getCustomerId();
+    const { data } = await stripe.subscriptions.list({ customer: customerId, limit: 10 });
+    const active = data.filter((s) => s.status === 'active');
+    const regular = active.find((s) =>
+      s.items.data.some((i) => i.price.product === process.env.STRIPE_PRODUCT_REGULAR),
+    );
+    const upsell = active.find((s) =>
+      s.items.data.some((i) => i.price.product === process.env.STRIPE_PRODUCT_UPSELL),
+    );
+    return { regular: resolveSubState(regular), upsell: resolveSubState(upsell) };
   } catch {
-    return null;
+    return { regular: null, upsell: null };
   }
 }
 
@@ -85,6 +100,42 @@ export async function resumeSubscription(): Promise<void> {
   const paused = subs.find((s) => s.pause_collection !== null);
   if (!paused) throw new Error(t('verify_no_subscription'));
   await stripe.subscriptions.update(paused.id, { pause_collection: '' });
+}
+
+export async function resumeCancelledSubscription(): Promise<void> {
+  const t = await getTranslations();
+  const subs = await getSubscriptions(process.env.STRIPE_PRODUCT_REGULAR);
+  const cancelled = subs.find((s) => s.cancel_at_period_end || !!s.cancel_at);
+  if (!cancelled) throw new Error(t('verify_no_subscription'));
+  const updates: Parameters<typeof stripe.subscriptions.update>[1] = {};
+  if (cancelled.cancel_at_period_end) {
+    updates.cancel_at_period_end = false;
+  } else if (cancelled.cancel_at) {
+    updates.cancel_at = '';
+  }
+  await stripe.subscriptions.update(cancelled.id, updates);
+}
+
+
+export async function resumeUpsellSubscription(): Promise<void> {
+  const t = await getTranslations();
+  const customerId = await getCustomerId();
+  const subscriptions = await stripe.subscriptions.list({ customer: customerId, limit: 10 });
+  const resumable = subscriptions.data.find(
+    (s) =>
+      s.status === 'active' &&
+      (s.cancel_at_period_end || !!s.cancel_at || s.pause_collection !== null) &&
+      s.items.data.some((item) => item.price.product === process.env.STRIPE_PRODUCT_UPSELL),
+  );
+  if (!resumable) throw new Error(t('verify_no_mentoring'));
+  const updates: Parameters<typeof stripe.subscriptions.update>[1] = {};
+  if (resumable.cancel_at_period_end) {
+    updates.cancel_at_period_end = false;
+  } else if (resumable.cancel_at) {
+    updates.cancel_at = '';
+  }
+  if (resumable.pause_collection) updates.pause_collection = '';
+  await stripe.subscriptions.update(resumable.id, updates);
 }
 
 async function getReturnUrl(): Promise<string> {

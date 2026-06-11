@@ -4,7 +4,7 @@ import { cancelSubscription, pauseSubscription } from '@/lib/actions/subscriptio
 import { CheckCircle, Loader2, XCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type State = 'loading' | 'success' | 'error';
 
@@ -17,8 +17,11 @@ export function StepLoading({ action }: StepLoadingProps) {
   const router = useRouter();
   const [state, setState] = useState<State>('loading');
   const [errorMsg, setErrorMsg] = useState('');
+  const hasRun = useRef(false);
 
   useEffect(() => {
+    if (hasRun.current) return;
+    hasRun.current = true;
     const run = async () => {
       try {
         if (action === 'pause') {

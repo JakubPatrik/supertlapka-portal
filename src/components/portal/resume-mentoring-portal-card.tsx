@@ -1,5 +1,6 @@
 'use client';
 
+import { resumeUpsellSubscription } from '@/lib/actions/subscription';
 import { PlayCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
@@ -7,17 +8,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { PortalCard } from './portal-card';
 
-export function ResumePortalCard({
-  action,
-  titleKey,
-  descKey,
-  successKey,
-}: {
-  action: () => Promise<void>;
-  titleKey: string;
-  descKey: string;
-  successKey: string;
-}) {
+export function ResumeMentoringPortalCard() {
   const t = useTranslations();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -26,8 +17,8 @@ export function ResumePortalCard({
     if (loading) return;
     setLoading(true);
     try {
-      await action();
-      toast.success(t(successKey));
+      await resumeUpsellSubscription();
+      toast.success(t('portal_card_resume_mentoring_success'));
       router.refresh();
     } catch (err: unknown) {
       toast.error((err as Error).message);
@@ -39,9 +30,9 @@ export function ResumePortalCard({
     <button onClick={handleClick} className="cursor-pointer w-full text-left disabled:opacity-60" disabled={loading}>
       <PortalCard
         icon={<PlayCircle size={22} />}
-        color="green"
-        title={t(titleKey)}
-        description={t(descKey)}
+        color="yellow"
+        title={t('portal_card_resume_mentoring_title')}
+        description={t('portal_card_resume_mentoring_desc')}
         loading={loading}
       />
     </button>
