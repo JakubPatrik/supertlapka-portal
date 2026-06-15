@@ -4,11 +4,11 @@ type VideoPlayerProps = {
 
 export function VideoPlayer({ src }: VideoPlayerProps) {
   return (
-    <div className="bg-muted aspect-video w-full rounded-md">
+    <div className="bg-muted aspect-[9/16] w-full rounded-md">
       <div
         style={{
           position: 'relative',
-          paddingTop: '56.25%',
+          paddingTop: '177.78%',
         }}
       >
         <iframe

@@ -16,6 +16,8 @@
   "verify_no_subscription": "K tomuto e-mailu neexistuje aktívne predplatné.",
   "verify_no_mentoring": "K tomuto účtu neexistuje aktívny Osobný mentoring.",
   "verify_otp_error": "Neplatný alebo vypršaný kód. Skús to znova.",
+  "verify_resend_label": "Nedostal/a si kód?",
+  "verify_resend_link": "Skús znova",
   "portal_welcome": "Vitaj v portáli!",
   "portal_user_id_label": "ID používateľa",
   "portal_title": "Členský portál",

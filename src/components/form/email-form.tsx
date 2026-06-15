@@ -11,9 +11,10 @@ import { toast } from 'sonner';
 
 interface EmailFormProps {
   onSubmit: (email: string) => Promise<{ error: string } | void>;
+  initialEmail?: string;
 }
 
-export function EmailForm({ onSubmit }: EmailFormProps) {
+export function EmailForm({ onSubmit, initialEmail }: EmailFormProps) {
   const t = useTranslations();
   const emailInputRef = useRef<EmailInputHandle>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -29,7 +30,12 @@ export function EmailForm({ onSubmit }: EmailFormProps) {
     <div className="space-y-6">
       <div className="space-y-1.5">
         {/* <Label htmlFor="email">{t('email_label')}</Label> */}
-        <EmailInput ref={emailInputRef} onSubmit={handleSubmit} disabled={isSaving} />
+        <EmailInput
+          ref={emailInputRef}
+          onSubmit={handleSubmit}
+          disabled={isSaving}
+          initialValue={initialEmail}
+        />
         <motion.div
           className="mx-auto mt-8 flex w-full max-w-[500px] items-start gap-3 px-4"
           initial={{ opacity: 0 }}

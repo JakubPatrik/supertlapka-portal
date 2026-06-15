@@ -8,8 +8,9 @@ import { CheckCircle, Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { EmailInput } from '../shared/email-input';
 
 interface OtpFormProps {
@@ -23,6 +24,12 @@ export function OtpForm({ email }: OtpFormProps) {
   const [token, setToken] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
+  const [showResendHelper, setShowResendHelper] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowResendHelper(true), 30_000);
+    return () => clearTimeout(timer);
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -63,6 +70,7 @@ export function OtpForm({ email }: OtpFormProps) {
             onChange={(val) => {
               setToken(val);
               setError(null);
+              if (val.length > 0) setShowResendHelper(false);
             }}
             pattern={REGEXP_ONLY_DIGITS}
             disabled={isPending}
@@ -89,6 +97,22 @@ export function OtpForm({ email }: OtpFormProps) {
             </motion.p>
           )}
         </div>
+
+        {showResendHelper && (
+          <motion.p
+            className="text-muted-foreground text-center text-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            {t('verify_resend_label')}{' '}
+            <Link
+              href={`/?email=${encodeURIComponent(email)}`}
+              className="underline underline-offset-4"
+            >
+              {t('verify_resend_link')}
+            </Link>
+          </motion.p>
+        )}
 
         <motion.div
           initial={{ opacity: 0, y: 6 }}

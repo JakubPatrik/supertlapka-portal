@@ -4,8 +4,13 @@ import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 import { redirect } from 'next/navigation';
 
-export default async function AuthPage() {
+type AuthPageProps = {
+  searchParams: Promise<{ email?: string }>;
+};
+
+export default async function AuthPage({ searchParams }: AuthPageProps) {
   const t = await getTranslations();
+  const { email: prefillEmail } = await searchParams;
 
   async function handleSubmit(email: string): Promise<{ error: string } | void> {
     'use server';
@@ -28,7 +33,10 @@ export default async function AuthPage() {
           <p className="text-muted-foreground text-sm">{t('welcome_subtitle')}</p>
         </div>
 
-        <EmailForm onSubmit={handleSubmit} />
+        <EmailForm
+          onSubmit={handleSubmit}
+          initialEmail={prefillEmail ? decodeURIComponent(prefillEmail) : undefined}
+        />
       </div>
     </main>
   );
