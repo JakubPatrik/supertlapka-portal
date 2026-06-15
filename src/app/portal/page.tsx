@@ -4,30 +4,27 @@ import { PortalCard } from '@/components/portal/portal-card';
 import { ResumeMentoringPortalCard } from '@/components/portal/resume-mentoring-portal-card';
 import { ResumePortalCard } from '@/components/portal/resume-portal-card';
 import { NavHeader } from '@/components/shared/nav-header';
-import { getPortalSubscriptions, resumeCancelledSubscription, resumeSubscription } from '@/lib/actions/subscription';
+import {
+  getPortalSubscriptions,
+  resumeCancelledSubscription,
+  resumeSubscription,
+} from '@/lib/actions/subscription';
 import { Ban } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 
 export default async function PortalPage() {
-  const [t, subscriptions] = await Promise.all([
-    getTranslations(),
-    getPortalSubscriptions(),
-  ]);
+  const [t, subscriptions] = await Promise.all([getTranslations(), getPortalSubscriptions()]);
 
   return (
     <div className="flex min-h-screen flex-col">
       <NavHeader />
 
-      <main className="flex-1 mx-auto max-w-md relative">
-        <section className="relative bg-muted rounded-lg px-6 pb-0 pt-8 mt-8 min-h-[220px]">
+      <main className="relative mx-auto max-w-md flex-1">
+        <section className="bg-muted relative mt-8 min-h-[220px] rounded-lg px-6 pt-8 pb-0">
           <div className="max-w-[55%]">
-            <h1 className="text-4xl font-bold leading-tight text-black">
-              {t('portal_title')}
-            </h1>
-            <p className="mt-3 text-sm text-gray-600 leading-snug">
-              {t('portal_subtitle')}
-            </p>
+            <h1 className="text-4xl leading-tight font-bold text-black">{t('portal_title')}</h1>
+            <p className="mt-3 text-sm leading-snug text-gray-600">{t('portal_subtitle')}</p>
           </div>
           <Image
             src="/images/dogs/dog-happy.png"
@@ -42,9 +39,11 @@ export default async function PortalPage() {
 
         <section className="space-y-3 px-4 py-6">
           <BillingPortalCard />
-          {(subscriptions.upsell?.canReactivate || subscriptions.upsell?.canResume)
-            ? <ResumeMentoringPortalCard />
-            : <CancelPortalCard />}
+          {subscriptions.upsell?.canReactivate || subscriptions.upsell?.canResume ? (
+            <ResumeMentoringPortalCard />
+          ) : (
+            <CancelPortalCard />
+          )}
           {subscriptions.regular?.canResume ? (
             <ResumePortalCard
               action={resumeSubscription}
@@ -70,14 +69,8 @@ export default async function PortalPage() {
           )}
         </section>
 
-        <div className="pointer-events-none fixed -bottom-16 -right-8 z-[-1]">
-          <Image
-            src="/images/paw.png"
-            alt=""
-            width={200}
-            height={200}
-            aria-hidden
-          />
+        <div className="pointer-events-none fixed -right-8 -bottom-16 z-[-1]">
+          <Image src="/images/paw.png" alt="" width={200} height={200} aria-hidden />
         </div>
       </main>
     </div>

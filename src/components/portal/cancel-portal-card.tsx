@@ -25,7 +25,11 @@ export function CancelPortalCard() {
   }
 
   return (
-    <button onClick={handleClick} className="cursor-pointer w-full text-left disabled:opacity-60" disabled={loading}>
+    <button
+      onClick={handleClick}
+      className="w-full cursor-pointer text-left disabled:opacity-60"
+      disabled={loading}
+    >
       <PortalCard
         icon={<UserMinus size={22} />}
         color="yellow"

@@ -17,44 +17,40 @@ export function Step1({ goToStep }: { goToStep: (s: number) => void }) {
       label: t('cancel_step1_feature_progress'),
       bg: 'bg-amber-50',
       iconBg: 'bg-amber-400',
-      icon: <PawPrint className="h-7 w-7 text-white fill-white" />,
+      icon: <PawPrint className="h-7 w-7 fill-white text-white" />,
     },
     {
       label: t('cancel_step1_feature_community'),
       bg: 'bg-green-50',
       iconBg: 'bg-green-500',
-      icon: <Dog className="h-7 w-7 text-white fill-white" />,
+      icon: <Dog className="h-7 w-7 fill-white text-white" />,
     },
     {
       label: t('cancel_step1_feature_support'),
       bg: 'bg-purple-50',
       iconBg: 'bg-purple-600',
-      icon: <Heart className="h-7 w-7 text-white fill-white" />,
+      icon: <Heart className="h-7 w-7 fill-white text-white" />,
     },
   ];
 
   return (
     <div className="flex flex-col gap-3 pt-4">
       <div className="text-center">
-        <h1 className="text-3xl font-black">
-          {t('cancel_step1_title')}
-        </h1>
-        <p className="text-base text-muted-foreground">
-          {t('cancel_step1_subtitle')}
-        </p>
+        <h1 className="text-3xl font-black">{t('cancel_step1_title')}</h1>
+        <p className="text-muted-foreground text-base">{t('cancel_step1_subtitle')}</p>
       </div>
 
-      <div className="h-full grid grid-cols-2 gap-3">
+      <div className="grid h-full grid-cols-2 gap-3">
         {features.map((f, i) => (
           <button
             key={i}
             onClick={() => goToStep(2)}
-            className={`${f.bg} flex flex-col items-center justify-center gap-4 rounded-3xl p-5 text-center cursor-pointer`}
+            className={`${f.bg} flex cursor-pointer flex-col items-center justify-center gap-4 rounded-3xl p-5 text-center`}
           >
             <div className={`${f.iconBg} flex size-14 items-center justify-center rounded-full`}>
               {f.icon}
             </div>
-            <p className="text-base font-bold leading-snug">{f.label}</p>
+            <p className="text-base leading-snug font-bold">{f.label}</p>
           </button>
         ))}
       </div>

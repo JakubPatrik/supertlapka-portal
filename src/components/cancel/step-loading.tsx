@@ -36,7 +36,7 @@ export function StepLoading({ action }: StepLoadingProps) {
       }
     };
     run();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -49,8 +49,8 @@ export function StepLoading({ action }: StepLoadingProps) {
     <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
       {state === 'loading' && (
         <>
-          <Loader2 className="size-16 animate-spin text-primary" />
-          <p className="text-lg font-semibold text-muted-foreground">
+          <Loader2 className="text-primary size-16 animate-spin" />
+          <p className="text-muted-foreground text-lg font-semibold">
             {action === 'pause' ? t('cancel_loading_pause_text') : t('cancel_loading_cancel_text')}
           </p>
         </>
@@ -60,7 +60,7 @@ export function StepLoading({ action }: StepLoadingProps) {
         <>
           <CheckCircle className="size-16 text-green-500" />
           <h2 className="text-2xl font-black">{t('cancel_success_title')}</h2>
-          <p className="text-base text-muted-foreground">
+          <p className="text-muted-foreground text-base">
             {action === 'pause' ? t('cancel_success_pause_text') : t('cancel_success_cancel_text')}
           </p>
         </>
@@ -68,9 +68,9 @@ export function StepLoading({ action }: StepLoadingProps) {
 
       {state === 'error' && (
         <>
-          <XCircle className="size-16 text-destructive" />
+          <XCircle className="text-destructive size-16" />
           <h2 className="text-2xl font-black">{t('cancel_error_title')}</h2>
-          <p className="text-base text-muted-foreground">{errorMsg || t('cancel_error_text')}</p>
+          <p className="text-muted-foreground text-base">{errorMsg || t('cancel_error_text')}</p>
         </>
       )}
     </div>

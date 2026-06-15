@@ -9,7 +9,9 @@ async function getCustomerId(): Promise<string> {
   const t = await getTranslations();
   const supabase = await createClient();
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) throw new Error(t('verify_no_subscription'));
 
   const { data } = await supabase
@@ -43,7 +45,9 @@ type SubState = {
   canCancel: boolean;
 } | null;
 
-function resolveSubState(sub: Awaited<ReturnType<typeof stripe.subscriptions.list>>['data'][number] | undefined): SubState {
+function resolveSubState(
+  sub: Awaited<ReturnType<typeof stripe.subscriptions.list>>['data'][number] | undefined,
+): SubState {
   if (!sub) return null;
   const isPaused = sub.pause_collection !== null;
   const isScheduledToCancel = sub.cancel_at_period_end || !!sub.cancel_at;
@@ -115,7 +119,6 @@ export async function resumeCancelledSubscription(): Promise<void> {
   }
   await stripe.subscriptions.update(cancelled.id, updates);
 }
-
 
 export async function resumeUpsellSubscription(): Promise<void> {
   const t = await getTranslations();
