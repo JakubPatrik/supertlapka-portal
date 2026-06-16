@@ -12,7 +12,7 @@ export function CancelFooter({ variant }: CancelFooterProps) {
   const t = useTranslations();
 
   return (
-    <footer className="sticky right-0 bottom-0 left-0 z-10 shrink-0 py-4">
+    <footer className="right-0 bottom-0 left-0 z-10 shrink-0 py-4">
       <style>{`
           @keyframes cta-glow {
             0% { box-shadow: 0 0 0 0 color-mix(in oklch, var(--primary) 50%, transparent); }
