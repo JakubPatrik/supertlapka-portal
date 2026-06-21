@@ -88,14 +88,38 @@ export async function pauseSubscription(): Promise<void> {
   });
 }
 
+async function cancelAtPeriodEnd(sub: Awaited<ReturnType<typeof stripe.subscriptions.list>>['data'][number]): Promise<void> {
+  if (sub.schedule) {
+    const scheduleId = typeof sub.schedule === 'string' ? sub.schedule : sub.schedule.id;
+    const schedule = await stripe.subscriptionSchedules.retrieve(scheduleId);
+    const now = Math.floor(Date.now() / 1000);
+    const currentPhase =
+      schedule.phases.find((p) => p.start_date <= now && (!p.end_date || p.end_date > now)) ??
+      schedule.phases[schedule.phases.length - 1];
+    await stripe.subscriptionSchedules.update(scheduleId, {
+      end_behavior: 'cancel',
+      phases: [
+        {
+          items: currentPhase.items.map((item) => ({
+            price: typeof item.price === 'string' ? item.price : item.price.id,
+            quantity: item.quantity ?? 1,
+          })),
+          start_date: currentPhase.start_date,
+          end_date: sub.items.data[0].current_period_end,
+        },
+      ],
+    });
+  } else {
+    await stripe.subscriptions.update(sub.id, { cancel_at_period_end: true });
+  }
+}
+
 export async function cancelSubscription(): Promise<void> {
   const t = await getTranslations();
   const subs = await getSubscriptions(process.env.STRIPE_PRODUCT_REGULAR);
   const active = subs.find((s) => !s.pause_collection);
   if (!active) throw new Error(t('verify_no_subscription'));
-  await stripe.subscriptions.update(active.id, {
-    cancel_at_period_end: true,
-  });
+  await cancelAtPeriodEnd(active);
 }
 
 export async function resumeSubscription(): Promise<void> {
@@ -203,6 +227,20 @@ export async function createBillingPortalSession(): Promise<string> {
   return session.url;
 }
 
+export async function cancelUpsellSubscription(): Promise<void> {
+  const t = await getTranslations();
+  const customerId = await getCustomerId();
+  const subscriptions = await stripe.subscriptions.list({ customer: customerId, limit: 10 });
+  const mentoring = subscriptions.data.find(
+    (s) =>
+      s.status === 'active' &&
+      !s.cancel_at_period_end &&
+      s.items.data.some((item) => item.price.product === process.env.STRIPE_PRODUCT_UPSELL),
+  );
+  if (!mentoring) throw new Error(t('verify_no_mentoring'));
+  await cancelAtPeriodEnd(mentoring);
+}
+
 export async function createCancelSubscriptionPortalSession(): Promise<string> {
   const t = await getTranslations();
   const customerId = await getCustomerId();
@@ -215,6 +253,12 @@ export async function createCancelSubscriptionPortalSession(): Promise<string> {
       s.items.data.some((item) => item.price.product === process.env.STRIPE_PRODUCT_UPSELL),
   );
   if (!mentoring) throw new Error(t('verify_no_mentoring'));
+
+  // If managed by a schedule, cancel directly via the schedule API
+  if (mentoring.schedule) {
+    await cancelAtPeriodEnd(mentoring);
+    return await getReturnUrl();
+  }
 
   try {
     const session = await stripe.billingPortal.sessions.create({
