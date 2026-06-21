@@ -1,5 +1,6 @@
 import { BillingPortalCard } from '@/components/portal/billing-portal-card';
 import { CancelPortalCard } from '@/components/portal/cancel-portal-card';
+import { PurchaseUpsellPortalCard } from '@/components/portal/purchase-upsell-portal-card';
 import { PortalCard } from '@/components/portal/portal-card';
 import { ResumeMentoringPortalCard } from '@/components/portal/resume-mentoring-portal-card';
 import { ResumePortalCard } from '@/components/portal/resume-portal-card';
@@ -9,12 +10,18 @@ import {
   resumeCancelledSubscription,
   resumeSubscription,
 } from '@/lib/actions/subscription';
+import { createClient } from '@/lib/supabase/server';
 import { Ban } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 
 export default async function PortalPage() {
-  const [t, subscriptions] = await Promise.all([getTranslations(), getPortalSubscriptions()]);
+  const supabase = await createClient();
+  const [t, subscriptions, { data: { user } }] = await Promise.all([
+    getTranslations(),
+    getPortalSubscriptions(),
+    supabase.auth.getUser(),
+  ]);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -23,6 +30,9 @@ export default async function PortalPage() {
       <main className="relative mx-auto max-w-md flex-1">
         <section className="bg-muted relative mt-8 min-h-[220px] rounded-lg px-6 pt-8 pb-0">
           <div className="max-w-[55%]">
+            {user?.email && (
+              <p className="mb-2 text-xs text-gray-500">{t('portal_logged_in_as', { email: user.email })}</p>
+            )}
             <h1 className="text-4xl leading-tight font-bold text-black">{t('portal_title')}</h1>
             <p className="mt-3 text-sm leading-snug text-gray-600">{t('portal_subtitle')}</p>
           </div>
@@ -41,8 +51,10 @@ export default async function PortalPage() {
           <BillingPortalCard />
           {subscriptions.upsell?.canReactivate || subscriptions.upsell?.canResume ? (
             <ResumeMentoringPortalCard />
-          ) : (
+          ) : subscriptions.upsell?.canCancel ? (
             <CancelPortalCard />
+          ) : (
+            <PurchaseUpsellPortalCard />
           )}
           {subscriptions.regular?.canResume ? (
             <ResumePortalCard

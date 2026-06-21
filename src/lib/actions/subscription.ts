@@ -1,6 +1,6 @@
 'use server';
 
-import { stripe } from '@/lib/stripe';
+import { stripe, type StripeCustomer } from '@/lib/stripe';
 import { createClient } from '@/lib/supabase/server';
 import { getTranslations } from 'next-intl/server';
 import { headers } from 'next/headers';
@@ -139,6 +139,51 @@ export async function resumeUpsellSubscription(): Promise<void> {
   }
   if (resumable.pause_collection) updates.pause_collection = '';
   await stripe.subscriptions.update(resumable.id, updates);
+}
+
+export async function purchaseUpsellSubscription(): Promise<
+  { type: 'success' } | { type: 'checkout'; url: string }
+> {
+  const customerId = await getCustomerId();
+
+  const subs = await stripe.subscriptions.list({ customer: customerId, limit: 10 });
+  const regular = subs.data.find((s) =>
+    s.items.data.some((i) => i.price.product === process.env.STRIPE_PRODUCT_REGULAR),
+  );
+  const currency = regular?.currency;
+
+  try {
+    const customer = (await stripe.customers.retrieve(customerId)) as StripeCustomer;
+    let paymentMethodId = customer.invoice_settings?.default_payment_method as string | undefined;
+    if (!paymentMethodId) {
+      paymentMethodId = customer.default_source as string | undefined;
+    }
+    if (!paymentMethodId) {
+      const methods = await stripe.paymentMethods.list({ customer: customerId, type: 'card', limit: 1 });
+      paymentMethodId = methods.data[0]?.id;
+    }
+    if (paymentMethodId) {
+      await stripe.subscriptions.create({
+        customer: customerId,
+        items: [{ price: process.env.STRIPE_PRICE_UPSELL_FULL }],
+        default_payment_method: paymentMethodId,
+        ...(currency ? { currency } : {}),
+      });
+      return { type: 'success' };
+    }
+  } catch (err) {
+    console.error('[purchaseUpsellSubscription] auto-purchase failed, falling back to checkout:', err);
+  }
+
+  const session = await stripe.checkout.sessions.create({
+    customer: customerId,
+    mode: 'subscription',
+    line_items: [{ price: process.env.STRIPE_PRICE_UPSELL_FULL, quantity: 1 }],
+    ...(currency ? { currency } : {}),
+    success_url: await getReturnUrl(),
+    cancel_url: await getReturnUrl(),
+  });
+  return { type: 'checkout', url: session.url! };
 }
 
 async function getReturnUrl(): Promise<string> {
