@@ -9,10 +9,10 @@ import { CancelFooter } from './cancel-footer';
 export function Step0({ goToStep }: { goToStep: (s: number, reason?: number) => void }) {
   const t = useTranslations();
   const reasons = [
-    t('cancel_step0_reason_price'),
-    t('cancel_step0_reason_results'),
-    t('cancel_step0_reason_learned'),
-    t('cancel_step0_reason_tech'),
+    { key: 'price', label: t('cancel_step0_reason_price') },
+    { key: 'results', label: t('cancel_step0_reason_results') },
+    { key: 'learned', label: t('cancel_step0_reason_learned') },
+    { key: 'tech', label: t('cancel_step0_reason_tech') },
   ];
 
   return (
@@ -43,8 +43,17 @@ export function Step0({ goToStep }: { goToStep: (s: number, reason?: number) => 
       <div className="bg-muted divide-border flex flex-col divide-y rounded-lg px-4">
         {reasons.map((reason, i) => (
           <div key={i} className="flex items-center justify-between gap-4 py-2">
-            <p className="flex-1 text-sm text-gray-800">{reason}</p>
-            <Button onClick={() => goToStep(1, i)} variant="outline" size="sm">
+            <p className="flex-1 text-sm text-gray-800">{reason.label}</p>
+            <Button
+              onClick={() => {
+                import('@/lib/analytics').then((analytics) => {
+                  analytics.trackCustomEvent('cancellation_reason', { value: reason.key });
+                });
+                goToStep(1, i);
+              }}
+              variant="outline"
+              size="sm"
+            >
               {t('cancel_continue')}
             </Button>
           </div>

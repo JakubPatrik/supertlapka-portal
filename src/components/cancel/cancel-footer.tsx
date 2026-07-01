@@ -42,14 +42,30 @@ export function CancelFooter({ variant }: CancelFooterProps) {
             asChild
             style={{ animation: 'cta-glow 2s ease-in-out infinite' }}
           >
-            <Link href="/portal/cancel?step=loading&action=pause">
+            <Link
+              href="/portal/cancel?step=loading&action=pause"
+              onClick={() => {
+                import('@/lib/analytics').then((analytics) => {
+                  analytics.trackCustomEvent('offer_outcome', { value: 'accept' });
+                });
+              }}
+            >
               <PawPrint className="size-6 -rotate-45 fill-white" />
               {t('cancel_step2_accept')}
             </Link>
           </Button>
 
           <Button size="lg" variant="outline" className="w-full" asChild>
-            <Link href="/portal/cancel?step=3">{t('cancel_step2_continue_cancel')}</Link>
+            <Link
+              href="/portal/cancel?step=3"
+              onClick={() => {
+                import('@/lib/analytics').then((analytics) => {
+                  analytics.trackCustomEvent('offer_outcome', { value: 'reject' });
+                });
+              }}
+            >
+              {t('cancel_step2_continue_cancel')}
+            </Link>
           </Button>
         </div>
       )}
@@ -62,13 +78,27 @@ export function CancelFooter({ variant }: CancelFooterProps) {
             asChild
             style={{ animation: 'cta-glow 2s ease-in-out infinite' }}
           >
-            <Link href="/portal">
+            <Link
+              href="/portal"
+              onClick={() => {
+                import('@/lib/analytics').then((analytics) => {
+                  analytics.trackCustomEvent('cancel_outcome', { value: 'reject' });
+                });
+              }}
+            >
               <Image src="/icons/back_arrow.svg" alt="" width={40} height={14} aria-hidden />
               {t('cancel_keep')}
             </Link>
           </Button>
           <Button size="lg" variant="outline" className="w-full" asChild>
-            <Link href="/portal/cancel?step=loading&action=cancel">
+            <Link
+              href="/portal/cancel?step=loading&action=cancel"
+              onClick={() => {
+                import('@/lib/analytics').then((analytics) => {
+                  analytics.trackCustomEvent('cancel_outcome', { value: 'accept' });
+                });
+              }}
+            >
               {t('cancel_step3_final_cancel')}
             </Link>
           </Button>

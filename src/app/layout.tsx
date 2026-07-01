@@ -1,12 +1,11 @@
-import FathomAnalytics from '@/components/scripts/FathomAnalytics';
 import MetaPixel from '@/components/scripts/MetaPixel';
 import { Toaster } from '@/components/ui/sonner';
-import NextTopLoader from 'nextjs-toploader';
 import { Analytics as VercelAnalytics } from '@vercel/analytics/next';
 import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages, getTranslations } from 'next-intl/server';
 import { Baloo_Bhai_2, DynaPuff } from 'next/font/google';
+import NextTopLoader from 'nextjs-toploader';
 import React from 'react';
 import './globals.css';
 
@@ -48,9 +47,6 @@ export default async function RootLayout({
         </NextIntlClientProvider>
         <Toaster />
         <MetaPixel />
-        {/* TODO: enable later */}
-        {/* <HyrosScript /> */}
-        <FathomAnalytics />
         <VercelAnalytics />
       </body>
     </html>

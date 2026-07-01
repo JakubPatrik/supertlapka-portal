@@ -1,4 +1,3 @@
-import { trackEvent as fathomTrackEvent } from 'fathom-client';
 import * as pixel from './fpixel';
 import { captureEvent, captureException } from './services/posthog.service';
 
@@ -10,13 +9,11 @@ import { captureEvent, captureException } from './services/posthog.service';
 
 export const trackEvent = (name: string, options?: Record<string, unknown>) => {
   captureEvent(name, options); // PostHog
-  fathomTrackEvent(name, options); // Fathom
   pixel.event(name, options);
 };
 
 export const trackCustomEvent = (name: string, options?: Record<string, unknown>) => {
   captureEvent(name, options); // PostHog
-  fathomTrackEvent(name, options); // Fathom
 };
 
 export const trackException = (error: Error, properties?: Record<string, unknown>) => {
