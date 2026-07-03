@@ -44,10 +44,7 @@ export function PurchaseUpsellPortalCard() {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <button
-          className="w-full cursor-pointer text-left disabled:opacity-60"
-          disabled={loading}
-        >
+        <button className="w-full cursor-pointer text-left disabled:opacity-60" disabled={loading}>
           <PortalCard
             icon={<PlusCircle size={22} />}
             color="green"
@@ -63,7 +60,7 @@ export function PurchaseUpsellPortalCard() {
           <div className="space-y-1">
             <AlertDialogTitle>{t('portal_upsell_confirm_title')}</AlertDialogTitle>
             <AlertDialogDescription>{t('portal_upsell_confirm_desc')}</AlertDialogDescription>
-            <p className="mt-8 text-muted-foreground text-[10px] leading-snug">
+            <p className="text-muted-foreground mt-8 text-[10px] leading-snug">
               {t.rich('portal_upsell_confirm_disclaimer', {
                 email: (chunks) => (
                   <a href="mailto:podpora@supertlapka.cz" className="underline">
@@ -88,7 +85,7 @@ export function PurchaseUpsellPortalCard() {
             alt=""
             width={112}
             height={88}
-            className="shrink-0 object-contain -mr-4"
+            className="-mr-4 shrink-0 object-contain"
             aria-hidden
           />
         </div>

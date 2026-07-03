@@ -17,11 +17,13 @@ import Image from 'next/image';
 
 export default async function PortalPage() {
   const supabase = await createClient();
-  const [t, subscriptions, { data: { user } }] = await Promise.all([
-    getTranslations(),
-    getPortalSubscriptions(),
-    supabase.auth.getUser(),
-  ]);
+  const [
+    t,
+    subscriptions,
+    {
+      data: { user },
+    },
+  ] = await Promise.all([getTranslations(), getPortalSubscriptions(), supabase.auth.getUser()]);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -31,7 +33,9 @@ export default async function PortalPage() {
         <section className="bg-muted relative mt-8 min-h-[220px] rounded-lg px-6 pt-8 pb-0">
           <div className="max-w-[55%]">
             {user?.email && (
-              <p className="mb-2 text-xs text-gray-500">{t('portal_logged_in_as', { email: user.email })}</p>
+              <p className="mb-2 text-xs text-gray-500">
+                {t('portal_logged_in_as', { email: user.email })}
+              </p>
             )}
             <h1 className="text-4xl leading-tight font-bold text-black">{t('portal_title')}</h1>
             <p className="mt-3 text-sm leading-snug text-gray-600">{t('portal_subtitle')}</p>

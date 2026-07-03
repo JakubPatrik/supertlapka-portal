@@ -4,6 +4,8 @@ import { stripe, type StripeCustomer } from '@/lib/stripe';
 import { createClient } from '@/lib/supabase/server';
 import { getTranslations } from 'next-intl/server';
 import { headers } from 'next/headers';
+import { unlockSkoolUpsell } from '../services/skool.service';
+import { promoteToPremium } from '../services/smartemailing.service';
 
 async function getCustomerId(): Promise<string> {
   const t = await getTranslations();
@@ -88,7 +90,9 @@ export async function pauseSubscription(): Promise<void> {
   });
 }
 
-async function cancelAtPeriodEnd(sub: Awaited<ReturnType<typeof stripe.subscriptions.list>>['data'][number]): Promise<void> {
+async function cancelAtPeriodEnd(
+  sub: Awaited<ReturnType<typeof stripe.subscriptions.list>>['data'][number],
+): Promise<void> {
   if (sub.schedule) {
     const scheduleId = typeof sub.schedule === 'string' ? sub.schedule : sub.schedule.id;
     const schedule = await stripe.subscriptionSchedules.retrieve(scheduleId);
@@ -183,7 +187,11 @@ export async function purchaseUpsellSubscription(): Promise<
       paymentMethodId = customer.default_source as string | undefined;
     }
     if (!paymentMethodId) {
-      const methods = await stripe.paymentMethods.list({ customer: customerId, type: 'card', limit: 1 });
+      const methods = await stripe.paymentMethods.list({
+        customer: customerId,
+        type: 'card',
+        limit: 1,
+      });
       paymentMethodId = methods.data[0]?.id;
     }
     if (paymentMethodId) {
@@ -193,10 +201,28 @@ export async function purchaseUpsellSubscription(): Promise<
         default_payment_method: paymentMethodId,
         ...(currency ? { currency } : {}),
       });
+
+      // Fire-and-forget:
+      const email = customer.email;
+      if (email) {
+        // Promote to Premium in SmartEmailing
+        promoteToPremium(email).catch((err) =>
+          console.error('[SmartEmailing] Failed to promote to Premium:', err),
+        );
+
+        // Unlock Skool Upsell
+        unlockSkoolUpsell(email).catch((err) =>
+          console.error('[Skool] Failed to unlock upsell:', err),
+        );
+      }
+
       return { type: 'success' };
     }
   } catch (err) {
-    console.error('[purchaseUpsellSubscription] auto-purchase failed, falling back to checkout:', err);
+    console.error(
+      '[purchaseUpsellSubscription] auto-purchase failed, falling back to checkout:',
+      err,
+    );
   }
 
   const session = await stripe.checkout.sessions.create({
