@@ -1,6 +1,6 @@
 'use server';
 
-import { stripe } from '@/lib/stripe';
+import { ALLOWED_SUBSCRIPTION_STATUSES, stripe } from '@/lib/stripe';
 import { createClient } from '@/lib/supabase/server';
 import { getTranslations } from 'next-intl/server';
 
@@ -14,8 +14,10 @@ export async function sendOtp(email: string): Promise<void> {
 
   const customerId = customers.data[0].id;
   const subscriptions = await stripe.subscriptions.list({ customer: customerId, limit: 5 });
-  const hasActive = subscriptions.data.some((s) => s.status === 'active');
-  if (!hasActive) {
+  const hasAllowed = subscriptions.data.some((s) =>
+    ALLOWED_SUBSCRIPTION_STATUSES.includes(s.status),
+  );
+  if (!hasAllowed) {
     throw new Error(t('verify_no_subscription'));
   }
 

@@ -1,6 +1,6 @@
 'use server';
 
-import { stripe, type StripeCustomer } from '@/lib/stripe';
+import { ALLOWED_SUBSCRIPTION_STATUSES, stripe, type StripeCustomer } from '@/lib/stripe';
 import { createClient } from '@/lib/supabase/server';
 import { getTranslations } from 'next-intl/server';
 import { headers } from 'next/headers';
@@ -36,7 +36,7 @@ async function getSubscriptions(productId?: string) {
   const subscriptions = await stripe.subscriptions.list({ customer: customerId, limit: 10 });
   return subscriptions.data.filter(
     (s) =>
-      s.status === 'active' &&
+      ALLOWED_SUBSCRIPTION_STATUSES.includes(s.status) &&
       (!productId || s.items.data.some((item) => item.price.product === productId)),
   );
 }
@@ -64,7 +64,7 @@ export async function getPortalSubscriptions(): Promise<{ regular: SubState; ups
   try {
     const customerId = await getCustomerId();
     const { data } = await stripe.subscriptions.list({ customer: customerId, limit: 10 });
-    const active = data.filter((s) => s.status === 'active');
+    const active = data.filter((s) => ALLOWED_SUBSCRIPTION_STATUSES.includes(s.status));
     const regular = active.find((s) =>
       s.items.data.some((i) => i.price.product === process.env.STRIPE_PRODUCT_REGULAR),
     );
@@ -154,7 +154,7 @@ export async function resumeUpsellSubscription(): Promise<void> {
   const subscriptions = await stripe.subscriptions.list({ customer: customerId, limit: 10 });
   const resumable = subscriptions.data.find(
     (s) =>
-      s.status === 'active' &&
+      ALLOWED_SUBSCRIPTION_STATUSES.includes(s.status) &&
       (s.cancel_at_period_end || !!s.cancel_at || s.pause_collection !== null) &&
       s.items.data.some((item) => item.price.product === process.env.STRIPE_PRODUCT_UPSELL),
   );
@@ -259,7 +259,7 @@ export async function cancelUpsellSubscription(): Promise<void> {
   const subscriptions = await stripe.subscriptions.list({ customer: customerId, limit: 10 });
   const mentoring = subscriptions.data.find(
     (s) =>
-      s.status === 'active' &&
+      ALLOWED_SUBSCRIPTION_STATUSES.includes(s.status) &&
       !s.cancel_at_period_end &&
       s.items.data.some((item) => item.price.product === process.env.STRIPE_PRODUCT_UPSELL),
   );
@@ -274,7 +274,7 @@ export async function createCancelSubscriptionPortalSession(): Promise<string> {
   const subscriptions = await stripe.subscriptions.list({ customer: customerId, limit: 10 });
   const mentoring = subscriptions.data.find(
     (s) =>
-      s.status === 'active' &&
+      ALLOWED_SUBSCRIPTION_STATUSES.includes(s.status) &&
       !s.cancel_at_period_end &&
       s.items.data.some((item) => item.price.product === process.env.STRIPE_PRODUCT_UPSELL),
   );
