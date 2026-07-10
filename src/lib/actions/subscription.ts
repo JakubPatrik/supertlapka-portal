@@ -118,6 +118,25 @@ async function cancelAtPeriodEnd(
   }
 }
 
+async function undoCancelAtPeriodEnd(
+  sub: Awaited<ReturnType<typeof stripe.subscriptions.list>>['data'][number],
+): Promise<void> {
+  if (sub.schedule) {
+    const scheduleId = typeof sub.schedule === 'string' ? sub.schedule : sub.schedule.id;
+    await stripe.subscriptionSchedules.release(scheduleId);
+    return;
+  }
+  const updates: Parameters<typeof stripe.subscriptions.update>[1] = {};
+  if (sub.cancel_at_period_end) {
+    updates.cancel_at_period_end = false;
+  } else if (sub.cancel_at) {
+    updates.cancel_at = '';
+  }
+  if (Object.keys(updates).length) {
+    await stripe.subscriptions.update(sub.id, updates);
+  }
+}
+
 export async function cancelSubscription(): Promise<void> {
   const t = await getTranslations();
   const subs = await getSubscriptions(process.env.STRIPE_PRODUCT_REGULAR);
@@ -139,13 +158,7 @@ export async function resumeCancelledSubscription(): Promise<void> {
   const subs = await getSubscriptions(process.env.STRIPE_PRODUCT_REGULAR);
   const cancelled = subs.find((s) => s.cancel_at_period_end || !!s.cancel_at);
   if (!cancelled) throw new Error(t('verify_no_subscription'));
-  const updates: Parameters<typeof stripe.subscriptions.update>[1] = {};
-  if (cancelled.cancel_at_period_end) {
-    updates.cancel_at_period_end = false;
-  } else if (cancelled.cancel_at) {
-    updates.cancel_at = '';
-  }
-  await stripe.subscriptions.update(cancelled.id, updates);
+  await undoCancelAtPeriodEnd(cancelled);
 }
 
 export async function resumeUpsellSubscription(): Promise<void> {
@@ -159,14 +172,12 @@ export async function resumeUpsellSubscription(): Promise<void> {
       s.items.data.some((item) => item.price.product === process.env.STRIPE_PRODUCT_UPSELL),
   );
   if (!resumable) throw new Error(t('verify_no_mentoring'));
-  const updates: Parameters<typeof stripe.subscriptions.update>[1] = {};
-  if (resumable.cancel_at_period_end) {
-    updates.cancel_at_period_end = false;
-  } else if (resumable.cancel_at) {
-    updates.cancel_at = '';
+  if (resumable.cancel_at_period_end || resumable.cancel_at) {
+    await undoCancelAtPeriodEnd(resumable);
   }
-  if (resumable.pause_collection) updates.pause_collection = '';
-  await stripe.subscriptions.update(resumable.id, updates);
+  if (resumable.pause_collection) {
+    await stripe.subscriptions.update(resumable.id, { pause_collection: '' });
+  }
 }
 
 export async function purchaseUpsellSubscription(): Promise<
