@@ -90,11 +90,27 @@ export async function pauseSubscription(): Promise<void> {
   });
 }
 
-async function cancelAtPeriodEnd(
+async function terminateSubscription(
   sub: Awaited<ReturnType<typeof stripe.subscriptions.list>>['data'][number],
 ): Promise<void> {
-  if (sub.schedule) {
-    const scheduleId = typeof sub.schedule === 'string' ? sub.schedule : sub.schedule.id;
+  const scheduleId = sub.schedule
+    ? typeof sub.schedule === 'string'
+      ? sub.schedule
+      : sub.schedule.id
+    : undefined;
+
+  // Past-due subs already failed to pay for the current period, so there's nothing left
+  // to let run out — cancel immediately instead of waiting for the period end.
+  if (sub.status === 'past_due') {
+    if (scheduleId) {
+      await stripe.subscriptionSchedules.cancel(scheduleId);
+    } else {
+      await stripe.subscriptions.cancel(sub.id);
+    }
+    return;
+  }
+
+  if (scheduleId) {
     const schedule = await stripe.subscriptionSchedules.retrieve(scheduleId);
     const now = Math.floor(Date.now() / 1000);
     const currentPhase =
@@ -142,7 +158,7 @@ export async function cancelSubscription(): Promise<void> {
   const subs = await getSubscriptions(process.env.STRIPE_PRODUCT_REGULAR);
   const active = subs.find((s) => !s.pause_collection);
   if (!active) throw new Error(t('verify_no_subscription'));
-  await cancelAtPeriodEnd(active);
+  await terminateSubscription(active);
 }
 
 export async function resumeSubscription(): Promise<void> {
@@ -275,7 +291,7 @@ export async function cancelUpsellSubscription(): Promise<void> {
       s.items.data.some((item) => item.price.product === process.env.STRIPE_PRODUCT_UPSELL),
   );
   if (!mentoring) throw new Error(t('verify_no_mentoring'));
-  await cancelAtPeriodEnd(mentoring);
+  await terminateSubscription(mentoring);
 }
 
 export async function createCancelSubscriptionPortalSession(): Promise<string> {
@@ -291,9 +307,10 @@ export async function createCancelSubscriptionPortalSession(): Promise<string> {
   );
   if (!mentoring) throw new Error(t('verify_no_mentoring'));
 
-  // If managed by a schedule, cancel directly via the schedule API
-  if (mentoring.schedule) {
-    await cancelAtPeriodEnd(mentoring);
+  // If managed by a schedule, or past_due (cancel immediately, not via the portal's
+  // period-end flow), cancel directly via the API instead of the billing portal.
+  if (mentoring.schedule || mentoring.status === 'past_due') {
+    await terminateSubscription(mentoring);
     return await getReturnUrl();
   }
 
