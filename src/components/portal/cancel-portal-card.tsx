@@ -32,7 +32,7 @@ export function CancelPortalCard() {
     >
       <PortalCard
         icon={<UserMinus size={22} />}
-        color="yellow"
+        color="rust"
         title={t('portal_card_mentoring_title')}
         description={t('portal_card_mentoring_desc')}
         loading={loading}

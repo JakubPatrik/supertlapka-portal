@@ -5,7 +5,7 @@ import { OTPInput, OTPInputContext } from 'input-otp';
 import * as React from 'react';
 
 // input-otp v1 calls performance.measure before the mark exists when another
-// library (e.g. motion/react) clears marks — patch to swallow the NotFoundError.
+// library (e.g. motion/react) clears marks - patch to swallow the NotFoundError.
 if (typeof performance !== 'undefined') {
   const _measure = performance.measure.bind(performance);
   performance.measure = (...args: Parameters<typeof performance.measure>): PerformanceMeasure => {
@@ -74,7 +74,7 @@ const InputOTPSeparator = React.forwardRef<
   React.ComponentPropsWithoutRef<'div'>
 >(({ ...props }, ref) => (
   <div ref={ref} role="separator" className="text-muted-foreground" {...props}>
-    <span>—</span>
+    <span>-</span>
   </div>
 ));
 InputOTPSeparator.displayName = 'InputOTPSeparator';

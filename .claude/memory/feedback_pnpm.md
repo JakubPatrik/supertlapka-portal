@@ -7,5 +7,5 @@ metadata:
 
 Always use `pnpm` for package management in this project.
 
-**Why:** User explicitly corrected npm usage — project is pnpm-only.
+**Why:** User explicitly corrected npm usage - project is pnpm-only.
 **How to apply:** Any `npm install`, `npm run`, `yarn add` etc. must be `pnpm add`, `pnpm run`, etc.

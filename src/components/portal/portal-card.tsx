@@ -1,7 +1,7 @@
 import { ChevronRight, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
-type CardColor = 'green' | 'yellow' | 'gray' | 'blue';
+type CardColor = 'green' | 'yellow' | 'gray' | 'blue' | 'purple' | 'rust';
 
 export function PortalCard({
   icon,
@@ -25,6 +25,8 @@ export function PortalCard({
     yellow: { badge: 'bg-yellow-400', chevron: 'text-yellow-400', border: 'border-yellow-400' },
     gray: { badge: 'bg-gray-300', chevron: 'text-gray-300', border: 'border-gray-400' },
     blue: { badge: 'bg-blue-500', chevron: 'text-blue-500', border: 'border-blue-500' },
+    purple: { badge: 'bg-purple-500', chevron: 'text-purple-500', border: 'border-purple-500' },
+    rust: { badge: 'bg-orange-800', chevron: 'text-orange-800', border: 'border-orange-800' },
   };
   const { badge, chevron, border } = colorMap[color];
 

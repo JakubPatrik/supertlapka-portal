@@ -47,7 +47,7 @@ export function PurchaseUpsellPortalCard() {
         <button className="w-full cursor-pointer text-left disabled:opacity-60" disabled={loading}>
           <PortalCard
             icon={<PlusCircle size={22} />}
-            color="green"
+            color="purple"
             title={t('portal_card_add_mentoring_title')}
             description={t('portal_card_add_mentoring_desc')}
             loading={loading}

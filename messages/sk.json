@@ -78,6 +78,8 @@
   "cancel_success_title": "Hotovo!",
   "cancel_success_pause_text": "Tvoje predplatné bolo úspešne pozastavené na 30 dní.",
   "cancel_success_cancel_text": "Tvoje predplatné bolo zrušené. Prístup máš do konca aktuálneho obdobia.",
+  "cancel_success_mentoring_note": "Máš aktívny aj osobný mentoring. Je to samostatné predplatné a zrušením členstva sa neruší - pokiaľ oň už nemáš záujem, zruš si ho prosím v portáli.",
+  "cancel_success_back_to_portal": "Späť do portálu",
   "cancel_error_title": "Niečo sa pokazilo",
   "cancel_error_text": "Nepodarilo sa spracovať tvoju požiadavku. Skús to prosím znova."
 }

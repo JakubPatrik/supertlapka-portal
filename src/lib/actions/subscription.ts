@@ -100,7 +100,7 @@ async function terminateSubscription(
     : undefined;
 
   // Past-due subs already failed to pay for the current period, so there's nothing left
-  // to let run out — cancel immediately instead of waiting for the period end.
+  // to let run out - cancel immediately instead of waiting for the period end.
   if (sub.status === 'past_due') {
     if (scheduleId) {
       await stripe.subscriptionSchedules.cancel(scheduleId);
