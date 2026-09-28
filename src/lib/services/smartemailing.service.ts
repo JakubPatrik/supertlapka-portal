@@ -1,4 +1,4 @@
-import { fetchRetry } from '../retry';
+import { fetchRetry } from '@/lib/retry';
 
 /**
  * SmartEmailing.cz API Service

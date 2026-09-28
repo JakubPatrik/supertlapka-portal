@@ -1,11 +1,11 @@
 'use client';
 
+import { PortalCard } from '@/components/portal/portal-card';
 import { createCancelSubscriptionPortalSession } from '@/lib/actions/subscription';
 import { UserMinus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { PortalCard } from './portal-card';
 
 export function CancelPortalCard() {
   const t = useTranslations();

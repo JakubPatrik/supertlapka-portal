@@ -1,10 +1,12 @@
 import { BillingPortalCard } from '@/components/portal/billing-portal-card';
 import { CancelPortalCard } from '@/components/portal/cancel-portal-card';
-import { PurchaseUpsellPortalCard } from '@/components/portal/purchase-upsell-portal-card';
+import { InvoicePortalCard } from '@/components/portal/invoice-portal-card';
 import { PortalCard } from '@/components/portal/portal-card';
+import { PurchaseUpsellPortalCard } from '@/components/portal/purchase-upsell-portal-card';
 import { ResumeMentoringPortalCard } from '@/components/portal/resume-mentoring-portal-card';
 import { ResumePortalCard } from '@/components/portal/resume-portal-card';
 import { NavHeader } from '@/components/shared/nav-header';
+import { getPortalInvoices } from '@/lib/actions/invoice';
 import {
   getPortalSubscriptions,
   resumeCancelledSubscription,
@@ -20,17 +22,23 @@ export default async function PortalPage() {
   const [
     t,
     subscriptions,
+    invoices,
     {
       data: { user },
     },
-  ] = await Promise.all([getTranslations(), getPortalSubscriptions(), supabase.auth.getUser()]);
+  ] = await Promise.all([
+    getTranslations(),
+    getPortalSubscriptions(),
+    getPortalInvoices(),
+    supabase.auth.getUser(),
+  ]);
 
   return (
     <div className="flex min-h-screen flex-col">
       <NavHeader />
 
       <main className="relative mx-auto max-w-md flex-1">
-        <section className="bg-muted relative mt-8 min-h-[220px] rounded-lg px-6 pt-8 pb-0">
+        <section className="bg-muted relative mt-8 min-h-55 rounded-lg px-6 pt-8 pb-0">
           <div className="max-w-[55%]">
             {user?.email && (
               <p className="mb-2 text-xs text-gray-500">
@@ -84,6 +92,12 @@ export default async function PortalPage() {
             />
           )}
         </section>
+
+        {invoices.length && (
+          <section className="px-4 pb-6">
+            <InvoicePortalCard invoices={invoices} />
+          </section>
+        )}
 
         <div className="pointer-events-none fixed -right-8 -bottom-16 z-[-1]">
           <Image src="/images/paw.png" alt="" width={200} height={200} aria-hidden />

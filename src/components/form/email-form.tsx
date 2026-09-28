@@ -21,9 +21,14 @@ export function EmailForm({ onSubmit, initialEmail }: EmailFormProps) {
 
   async function handleSubmit(email: string) {
     setIsSaving(true);
-    const result = await onSubmit(email);
-    setIsSaving(false);
-    if (result?.error) toast.error(result.error);
+    try {
+      const result = await onSubmit(email);
+      if (result?.error) toast.error(result.error);
+    } catch {
+      toast.error(t('cancel_error_text'));
+    } finally {
+      setIsSaving(false);
+    }
   }
 
   return (

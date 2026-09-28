@@ -1,8 +1,8 @@
+import { Button } from '@/components/ui/button';
 import { PawPrint } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Button } from '../ui/button';
 
 type CancelFooterProps = {
   variant: 'step0' | 'step1' | 'step2' | 'step3';

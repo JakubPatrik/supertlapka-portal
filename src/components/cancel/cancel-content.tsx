@@ -1,12 +1,12 @@
 'use client';
 
+import { Step0 } from '@/components/cancel/step-0';
+import { Step1 } from '@/components/cancel/step-1';
+import { Step2 } from '@/components/cancel/step-2';
+import { Step3 } from '@/components/cancel/step-3';
+import { StepLoading } from '@/components/cancel/step-loading';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
-import { Step0 } from './step-0';
-import { Step1 } from './step-1';
-import { Step2 } from './step-2';
-import { Step3 } from './step-3';
-import { StepLoading } from './step-loading';
 
 export function CancelContent() {
   const searchParams = useSearchParams();

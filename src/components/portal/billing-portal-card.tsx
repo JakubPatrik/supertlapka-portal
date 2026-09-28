@@ -1,11 +1,11 @@
 'use client';
 
+import { PortalCard } from '@/components/portal/portal-card';
 import { createBillingPortalSession } from '@/lib/actions/subscription';
 import { Receipt } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { PortalCard } from './portal-card';
 
 export function BillingPortalCard() {
   const t = useTranslations();

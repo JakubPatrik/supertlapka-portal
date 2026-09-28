@@ -17,7 +17,8 @@ export default async function AuthPage({ searchParams }: AuthPageProps) {
     try {
       await sendOtp(email);
     } catch (err) {
-      return { error: (err as Error).message };
+      const t = await getTranslations();
+      return { error: err instanceof Error && err.message ? err.message : t('cancel_error_text') };
     }
     redirect(`/verify?email=${encodeURIComponent(email)}`);
   }

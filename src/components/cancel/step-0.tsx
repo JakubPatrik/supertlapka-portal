@@ -1,10 +1,10 @@
 'use client';
 
+import { CancelFooter } from '@/components/cancel/cancel-footer';
+import { VideoPlayer } from '@/components/shared/video-player';
 import { Button } from '@/components/ui/button';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import { VideoPlayer } from '../shared/video-player';
-import { CancelFooter } from './cancel-footer';
 
 export function Step0({ goToStep }: { goToStep: (s: number, reason?: number) => void }) {
   const t = useTranslations();

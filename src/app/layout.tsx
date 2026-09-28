@@ -1,4 +1,4 @@
-import MetaPixel from '@/components/scripts/MetaPixel';
+import MetaPixel from '@/components/scripts/meta-pixel';
 import { Toaster } from '@/components/ui/sonner';
 import { Analytics as VercelAnalytics } from '@vercel/analytics/next';
 import type { Metadata } from 'next';

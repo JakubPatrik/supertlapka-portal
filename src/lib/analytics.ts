@@ -1,5 +1,5 @@
-import * as pixel from './fpixel';
-import { captureEvent, captureException } from './services/posthog.service';
+import * as pixel from '@/lib/fpixel';
+import { captureEvent, captureException } from '@/lib/services/posthog.service';
 
 /**
  * High-level analytics utility that coordinates multiple tracking services.

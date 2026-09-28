@@ -1,9 +1,9 @@
 'use client';
 
+import { CancelFooter } from '@/components/cancel/cancel-footer';
 import { Dog, Headphones, Heart, NotepadText, PawPrint, Sparkles } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import { CancelFooter } from './cancel-footer';
 
 export function Step3() {
   const t = useTranslations();

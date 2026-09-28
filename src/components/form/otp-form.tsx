@@ -1,5 +1,6 @@
 'use client';
 
+import { EmailInput } from '@/components/shared/email-input';
 import { Button } from '@/components/ui/button';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { verifyOtp } from '@/lib/actions/auth';
@@ -11,7 +12,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { EmailInput } from '../shared/email-input';
 
 interface OtpFormProps {
   email: string;

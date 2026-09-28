@@ -1,7 +1,7 @@
+import { APP_LOCALES, AppLocale } from '@/i18n/request';
 import { createServerClient } from '@supabase/ssr';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import { APP_LOCALES, AppLocale } from './i18n/request';
 
 const LOCALE_COOKIE_NAME = 'NEXT_LOCALE';
 const LOCALE_COOKIE_MAX_AGE = 34560000;

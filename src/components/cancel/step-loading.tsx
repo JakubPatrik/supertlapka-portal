@@ -1,5 +1,6 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
 import {
   cancelSubscription,
   getPortalSubscriptions,
@@ -9,7 +10,6 @@ import { AlertTriangle, CheckCircle, Loader2, XCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-import { Button } from '../ui/button';
 
 type State = 'loading' | 'success' | 'error';
 

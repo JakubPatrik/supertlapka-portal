@@ -1,11 +1,11 @@
 'use client';
 
+import { PortalCard } from '@/components/portal/portal-card';
 import { PlayCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { PortalCard } from './portal-card';
 
 export function ResumePortalCard({
   action,

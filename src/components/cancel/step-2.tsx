@@ -1,9 +1,9 @@
 'use client';
 
+import { CancelFooter } from '@/components/cancel/cancel-footer';
+import { VideoPlayer } from '@/components/shared/video-player';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import { VideoPlayer } from '../shared/video-player';
-import { CancelFooter } from './cancel-footer';
 
 const REASON_VIDEOS: Record<number, string> = {
   0: 'https://player.mediadelivery.net/embed/642777/10cf8309-972a-4516-af07-3ffc2a5ec276?autoplay=true&loop=false&muted=false&preload=true&responsive=true',
