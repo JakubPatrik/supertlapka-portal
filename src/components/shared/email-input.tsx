@@ -2,9 +2,10 @@
 
 import { Input } from '@/components/ui/input';
 import { EMAIL_SUGGESTED_DOMAINS } from '@/config/email.config';
+import type { AppLocale } from '@/i18n/request';
 import { Mail } from 'lucide-react';
 import { motion } from 'motion/react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 
 interface EmailInputProps {
@@ -22,6 +23,7 @@ export const EmailInput = forwardRef<EmailInputHandle, EmailInputProps>(function
   ref,
 ) {
   const t = useTranslations();
+  const locale = useLocale() as AppLocale;
 
   const [email, setEmail] = useState(initialValue ?? '');
   const [focused, setFocused] = useState(false);
@@ -34,7 +36,7 @@ export const EmailInput = forwardRef<EmailInputHandle, EmailInputProps>(function
     const [host, domain] = val.split('@');
     if (!host) return [];
     if (domain) return [val];
-    return EMAIL_SUGGESTED_DOMAINS.map((d) => `${host}@${d}`);
+    return EMAIL_SUGGESTED_DOMAINS[locale].map((d) => `${host}@${d}`);
   };
 
   const emailSuggestions = suggestEmails(email);

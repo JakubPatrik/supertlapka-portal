@@ -34,23 +34,16 @@ export async function getPortalInvoices(): Promise<PortalInvoice[]> {
       stripe.subscriptions.list({ customer: customerId, limit: 10 }),
     ]);
 
-    // Drafts (not finalized yet) and voided invoices are excluded - everything else is
-    // either already settled (paid/uncollectible) or open, whether overdue or upcoming.
+    // Drafts (not finalized) and unattempted open invoices are excluded - history should
+    // only ever show a settled outcome, paid or failed; "upcoming" comes from the preview below.
     const settled = invoices.data
       .filter(
         (invoice) =>
-          invoice.status === 'paid' ||
-          invoice.status === 'uncollectible' ||
-          invoice.status === 'open',
+          invoice.status === 'paid' || invoice.status === 'uncollectible' || invoice.attempted,
       )
       .map((invoice) => {
         const period = getInvoicePeriod(invoice);
-        const status: PortalInvoice['status'] =
-          invoice.status === 'paid'
-            ? 'paid'
-            : invoice.status === 'open' && !invoice.attempted
-              ? 'upcoming'
-              : 'failed';
+        const status: PortalInvoice['status'] = invoice.status === 'paid' ? 'paid' : 'failed';
         return {
           id: invoice.id,
           status,
@@ -58,8 +51,7 @@ export async function getPortalInvoices(): Promise<PortalInvoice[]> {
           currency: invoice.currency,
           periodStart: period.start,
           periodEnd: period.end,
-          collectAt:
-            status === 'upcoming' ? (invoice.next_payment_attempt ?? invoice.due_date) : null,
+          collectAt: null,
           hostedInvoiceUrl: invoice.hosted_invoice_url ?? null,
         };
       });

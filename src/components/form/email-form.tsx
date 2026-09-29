@@ -6,6 +6,7 @@ import { Loader2, Send } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
+import { unstable_rethrow } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -24,7 +25,8 @@ export function EmailForm({ onSubmit, initialEmail }: EmailFormProps) {
     try {
       const result = await onSubmit(email);
       if (result?.error) toast.error(result.error);
-    } catch {
+    } catch (err) {
+      unstable_rethrow(err);
       toast.error(t('cancel_error_text'));
     } finally {
       setIsSaving(false);
